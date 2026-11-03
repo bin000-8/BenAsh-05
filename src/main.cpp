@@ -8,7 +8,7 @@
 #include "../header/frame_buffer.h"
 #include <utility>
 #include <cstdlib>
-
+                                                        #include "../external/stb/stb_image_write.h"
 int main() {
     plContext PlContext;
     plFrame_buffer PlFrame_buffer(&PlContext);
@@ -60,11 +60,26 @@ int main() {
     std::vector<std::pair<Entity, shader>> scene;
     scene.emplace_back(cube, cube_shader);
     scene.emplace_back(light, light_shader);
-
+                                                                                 bool captured = false;
     while (!PlContext.end) {
         PlRenderer.start_frame();
 		PlInput.handle_input();
         PlRenderer.scene_render(scene);
+        std::vector<unsigned char> pixels = PlFrame_buffer.capture_frame();
+                                                                                if (!captured) {
+                                                                                        auto pixels = PlFrame_buffer.capture_frame();
+
+                                                                                        stbi_write_png(
+                                                                                            "frame.png",
+                                                                                            static_cast<int>(PlFrame_buffer.framebuffer_width),
+                                                                                            static_cast<int>(PlFrame_buffer.framebuffer_height),
+                                                                                            4,
+                                                                                            pixels.data(),
+                                                                                            static_cast<int>(PlFrame_buffer.framebuffer_width * 4)
+                                                                                        );
+
+                                                                                        captured = true;
+                                                                                    }
         PlFrame_buffer.present_frame();
         PlContext.swap_window();
     }

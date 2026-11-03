@@ -5,7 +5,7 @@ plFrame_buffer::plFrame_buffer(plContext* context) {
 }
 
 
-void plFrame_buffer::initialize_framebuffer(size_t width, size_t height) {
+void plFrame_buffer::initialize_framebuffer(const size_t width, const size_t height) {
     framebuffer_width = width;
     framebuffer_height = height;
     glGenFramebuffers(1, &framebuffer);
@@ -93,4 +93,23 @@ void plFrame_buffer::destroy_framebuffer() {
         glDeleteFramebuffers(1, &framebuffer);
         framebuffer = 0;
     }
+}
+
+std::vector<unsigned char> plFrame_buffer::capture_frame() {
+    std::vector<unsigned char> pixels(framebuffer_width * framebuffer_height * 4 /* since reading RGBA */);
+    glBindFramebuffer(
+        GL_READ_FRAMEBUFFER,
+        framebuffer
+    );
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    glReadPixels(
+        0,
+        0,
+        framebuffer_width,
+        framebuffer_height,
+        GL_RGBA,
+        GL_UNSIGNED_BYTE,
+        pixels.data()
+    );
+    return pixels;
 }
