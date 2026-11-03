@@ -5,16 +5,21 @@
 #include "../header/entity.h"
 #include "../header/types.h"
 #include "../header/plcli.h"
+#include "../header/frame_buffer.h"
 #include <utility>
 #include <cstdlib>
 
 int main() {
     plContext PlContext;
-    plRenderer PlRenderer(&PlContext);
+    plFrame_buffer PlFrame_buffer(&PlContext);
+    plRenderer PlRenderer(&PlContext, &PlFrame_buffer);
     plCamera PlCamera(&PlContext);
     plInput PlInput(&PlContext);
     plCli PlCli(&PlContext);
-
+    PlFrame_buffer.initialize_framebuffer(
+        PlContext.screen_width,
+        PlContext.screen_height
+    );
     Entity cube(pl::cube_vertices, pl::cube_indices, true, false);
     cube.mesh.rgb_vertices = pl::rgb::cube_sample_color_orange;
     PlRenderer.generate_buffers(cube);
@@ -60,8 +65,10 @@ int main() {
         PlRenderer.start_frame();
 		PlInput.handle_input();
         PlRenderer.scene_render(scene);
-		PlContext.swap_window();
+        PlFrame_buffer.present_frame();
+        PlContext.swap_window();
     }
+    PlFrame_buffer.destroy_framebuffer();
 	PlContext.dispose();
 	return 0;
 }

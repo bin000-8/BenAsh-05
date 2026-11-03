@@ -57,6 +57,9 @@
     <ClCompile Include="src\plcli.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\frame_buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\context.h">
@@ -93,6 +96,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="header\plcli.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="header\frame_buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

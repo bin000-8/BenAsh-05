@@ -5,8 +5,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "../external/stb/stb_image.h"
 
-plRenderer::plRenderer(plContext* context) {
+plRenderer::plRenderer(plContext* context, plFrame_buffer* frame_buffer) {
 	this->context = context;
+	this->frame_buffer = frame_buffer;
 	stbi_set_flip_vertically_on_load(true);
 }
 
@@ -133,8 +134,8 @@ void plRenderer::generate_objects(Entity& entity) {
 }
 
 void plRenderer::generate_shader(GLuint& shader_handle,
-							   const std::string& path_to_vertex_shader,
-						       const std::string& path_to_fragment_shader) {
+							     const std::string& path_to_vertex_shader,
+						         const std::string& path_to_fragment_shader) {
 	std::string vertex_shader_source = load_shader_as_string(path_to_vertex_shader);
 	std::string fragment_shader_source = load_shader_as_string(path_to_fragment_shader);
 	shader_handle = create_shader_program(vertex_shader_source, fragment_shader_source);
@@ -174,10 +175,24 @@ GLuint plRenderer::compile_shader(GLuint type_of_shader, const std::string& sour
 }
 
 void plRenderer::start_frame() {
+	/*
 	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE);				<< This is pre-FBO
 	glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	*/
+	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer->framebuffer);
+	    glViewport(
+        0,
+        0,
+        frame_buffer->framebuffer_width,
+        frame_buffer->framebuffer_height
+    );
+	glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+	glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 }
 
 void plRenderer::predraw(Entity& entity, GLuint& shader) {

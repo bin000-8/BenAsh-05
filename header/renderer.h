@@ -11,11 +11,13 @@
 #include "../header/camera.h"
 #include "../header/entity.h"
 #include "../header/texture.h"
+#include "../header/frame_buffer.h"
 
 struct plRenderer {
 	plContext* context = nullptr;
+	plFrame_buffer* frame_buffer = nullptr;
 
-	plRenderer(plContext* context);
+	plRenderer(plContext* context, plFrame_buffer* frame_buffer);
 	void generate_buffers(Entity& entity);
 	void generate_textures(Entity& entity);
 	void generate_objects(Entity& entity);
