@@ -5,13 +5,13 @@ plFrame_buffer::plFrame_buffer(plContext* context) {
 }
 
 
-void plFrame_buffer::initialize_framebuffer(const size_t width, const size_t height) {
-    framebuffer_width = width;
-    framebuffer_height = height;
-    glGenFramebuffers(1, &framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-    glGenTextures(1, &framebuffer_color_texture);
-    glBindTexture(GL_TEXTURE_2D, framebuffer_color_texture);
+void plFrame_buffer::initialize_frame_buffer(const size_t width, const size_t height) {
+    frame_buffer_width = width;
+    frame_buffer_height = height;
+    glGenFramebuffers(1, &frame_buffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer);
+    glGenTextures(1, &frame_buffer_color_texture);
+    glBindTexture(GL_TEXTURE_2D, frame_buffer_color_texture);
     glTexImage2D(
         GL_TEXTURE_2D,
         0,
@@ -29,13 +29,13 @@ void plFrame_buffer::initialize_framebuffer(const size_t width, const size_t hei
         GL_FRAMEBUFFER,
         GL_COLOR_ATTACHMENT0,
         GL_TEXTURE_2D,
-        framebuffer_color_texture,
+        frame_buffer_color_texture,
         0
     );
-    glGenRenderbuffers(1, &framebuffer_depth_stencil);
+    glGenRenderbuffers(1, &frame_buffer_depth_stencil);
     glBindRenderbuffer(
         GL_RENDERBUFFER,
-        framebuffer_depth_stencil
+        frame_buffer_depth_stencil
     );
     glRenderbufferStorage(
         GL_RENDERBUFFER,
@@ -47,7 +47,7 @@ void plFrame_buffer::initialize_framebuffer(const size_t width, const size_t hei
         GL_FRAMEBUFFER,
         GL_DEPTH_STENCIL_ATTACHMENT,
         GL_RENDERBUFFER,
-        framebuffer_depth_stencil
+        frame_buffer_depth_stencil
     );
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -55,7 +55,7 @@ void plFrame_buffer::initialize_framebuffer(const size_t width, const size_t hei
 void plFrame_buffer::present_frame() {
     glBindFramebuffer(
         GL_READ_FRAMEBUFFER,
-        framebuffer
+        frame_buffer
     );
     glBindFramebuffer(
         GL_DRAW_FRAMEBUFFER,
@@ -64,12 +64,12 @@ void plFrame_buffer::present_frame() {
     glBlitFramebuffer(
         0,
         0,
-        framebuffer_width,
-        framebuffer_height,
+        frame_buffer_width,
+        frame_buffer_height,
         0,
         0,
-        framebuffer_width,
-        framebuffer_height,
+        frame_buffer_width,
+        frame_buffer_height,
 
         GL_COLOR_BUFFER_BIT,
         GL_NEAREST
@@ -80,33 +80,35 @@ void plFrame_buffer::present_frame() {
     );
 }
 
-void plFrame_buffer::destroy_framebuffer() {
-    if (framebuffer_depth_stencil != 0) {
-        glDeleteRenderbuffers(1, &framebuffer_depth_stencil);
-        framebuffer_depth_stencil = 0;
+void plFrame_buffer::destroy_frame_buffer() {
+    if (frame_buffer_depth_stencil != 0) {
+        glDeleteRenderbuffers(1, &frame_buffer_depth_stencil);
+        frame_buffer_depth_stencil = 0;
     }
-    if (framebuffer_color_texture != 0) {
-        glDeleteTextures(1, &framebuffer_color_texture);
-        framebuffer_color_texture = 0;
+    if (frame_buffer_color_texture != 0) {
+        glDeleteTextures(1, &frame_buffer_color_texture);
+        frame_buffer_color_texture = 0;
     }
-    if (framebuffer != 0) {
-        glDeleteFramebuffers(1, &framebuffer);
-        framebuffer = 0;
+    if (frame_buffer != 0) {
+        glDeleteFramebuffers(1, &frame_buffer);
+        frame_buffer = 0;
     }
 }
 
 std::vector<unsigned char> plFrame_buffer::capture_frame() {
-    std::vector<unsigned char> pixels(framebuffer_width * framebuffer_height * 4 /* since reading RGBA */);
+    std::vector<unsigned char> pixels(
+        frame_buffer_width * frame_buffer_height * 4 /* since reading RGBA */
+    );
     glBindFramebuffer(
         GL_READ_FRAMEBUFFER,
-        framebuffer
+        frame_buffer
     );
     glReadBuffer(GL_COLOR_ATTACHMENT0);
     glReadPixels(
         0,
         0,
-        framebuffer_width,
-        framebuffer_height,
+        frame_buffer_width,
+        frame_buffer_height,
         GL_RGBA,
         GL_UNSIGNED_BYTE,
         pixels.data()

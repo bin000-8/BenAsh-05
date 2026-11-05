@@ -181,12 +181,12 @@ void plRenderer::start_frame() {
 	glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	*/
-	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer->framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer->frame_buffer);
 	    glViewport(
         0,
         0,
-        frame_buffer->framebuffer_width,
-        frame_buffer->framebuffer_height
+        frame_buffer->frame_buffer_width,
+        frame_buffer->frame_buffer_height
     );
 	glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
